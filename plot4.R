@@ -1,0 +1,30 @@
+dd <- read.table("..\\data\\household_power_consumption.txt",sep = ";",header = T)
+dd$Time <- strptime(paste(dd$Date,dd$Time),format = "%d/%m/%Y %H:%M:%OS")
+dd$Date <- as.Date(dd$Time)
+
+d <- dd[dd$Date %in% as.Date(c("2007-02-01", "2007-02-02")),]
+d$Global_active_power <- as.numeric(as.character(d$Global_active_power))
+d$Global_reactive_power <- as.numeric(as.character(d$Global_reactive_power))
+d$Voltage <- as.numeric(as.character(d$Voltage))
+d$Global_intensity <- as.numeric(as.character(d$Global_intensity))
+d$Sub_metering_1 <- as.numeric(as.character(d$Sub_metering_1))
+d$Sub_metering_2 <- as.numeric(as.character(d$Sub_metering_2))
+d$Sub_metering_3 <- as.numeric(as.character(d$Sub_metering_3))
+d$weekday <- weekdays(d$Time,abbreviate = T)
+
+library(xts)
+par(mfrow = c(2,2))
+plot(xts(d$Global_active_power,order.by = d$Time), major.ticks = "days", major.format ="%a", main="", ylab = "Global active power (KW)")
+
+plot(xts(d$Voltage,order.by = d$Time), major.ticks = "days", major.format ="%a", main="", ylab = "Voltage")
+
+plot(xts(d$Sub_metering_1,order.by = d$Time), major.ticks = "days", major.format ="%a", main="", ylab = "Energy sub metering")
+lines(xts(d$Sub_metering_2,order.by = d$Time), col = "red")
+lines(xts(d$Sub_metering_3,order.by = d$Time), col = "blue")
+legend("topright",c("Sub_met_1", "Sub_met_2", "Sub_met_3"), col=c("black", "red", "blue"), lty=c(1,1), cex = .5)
+
+plot(xts(d$Global_reactive_power,order.by = d$Time), major.ticks = "days", major.format ="%a", main="", ylab = "Global reactive power")
+par(mfrow = c(1,1))
+
+dev.copy(png, file="plot4.png")
+dev.off()
